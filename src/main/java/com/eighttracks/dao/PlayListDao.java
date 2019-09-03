@@ -3,11 +3,13 @@ package com.eighttracks.dao;
 import com.eighttracks.components.PostgresModule;
 import com.eighttracks.model.Playlist;
 import com.eighttracks.model.TagItem;
+import com.eighttracks.model.request.AddTags;
 import com.eighttracks.model.request.CreatePlaylist;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ public class PlayListDao {
     private static final String UPDATE_PLAYCOUNT_PLAYLIST = "Update playlists set likeCount = ? where playlistId = ?";
     private static final String GET_ALL_PLAYLISTS = "Select * from playlists";
     public static final String CREATED_AT = "createdAt";
+    public static final String PLAYLIST_ID = "playlistId";
     @Autowired
     private PostgresModule postgressModule;
     private final Gson gson = new Gson();
@@ -65,11 +68,26 @@ public class PlayListDao {
 
     public List<Playlist> getAllPlayList() {
         return postgressModule.getDb()
-                .query(GET_ALL_PLAYLISTS, ((resultSet, i) -> tagItemMapper(resultSet)));
-
+                .query(GET_ALL_PLAYLISTS, ((resultSet, i) -> playlistItemMapper(resultSet)));
     }
 
-    private Playlist tagItemMapper(ResultSet resultSet) throws SQLException {
+    public void addTags(AddTags addTags) {
+        for (Integer tag : addTags.getTags()) {
+            postgressModule.getDb()
+                    .update("INSERT INTO playlistTagMapping (playlistId, tagId) values (?,?)",
+                            addTags.getPlaylistId(), tag);
+        }
+    }
+
+    public List<Playlist> getPlayListFromTags(List<String> tagList) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource("tags", tagList);
+
+        return postgressModule.getNamedJDBCTemplate()
+                .query("select p.playlistid, p.playlistname, p.playcount, p.likecount, p.trackcount, p.songs, count(p.playlistid) from " +
+                "playlist p, tags t, playlisttagmapping ptm where t.tagid=ptm.tagid AND t.tagname IN (:tags) AND p.playlistid=ptm.playlistid group by p.playlistid order by count(p.playlistid) desc , likecount desc, trackcount desc", parameters, ((resultSet, i) -> playlistItemMapper(resultSet)) );
+    }
+
+    private Playlist playlistItemMapper(ResultSet resultSet) throws SQLException {
         Type listType = new TypeToken<ArrayList<TagItem>>() {
         }.getType();
         List<String> songs = null;
@@ -79,6 +97,7 @@ public class PlayListDao {
             e.printStackTrace();
         }
         return Playlist.builder()
+                .playlistId(Integer.parseInt(resultSet.getString(PLAYLIST_ID)))
                 .playCount(Integer.parseInt(resultSet.getString(PLAY_COUNT)))
                 .likeCount(Integer.parseInt(resultSet.getString(LIKE_COUNT)))
                 .notes(resultSet.getString(NOTES))

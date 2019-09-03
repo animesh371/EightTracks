@@ -49,7 +49,12 @@ public class PlaylistController {
     }
 
     @PostMapping("/addTags")
-    public void addTags(AddTags addTags) {
+    public void addTags(@RequestBody AddTags addTags) {
+        playListService.addTags(addTags);
+    }
 
+    @GetMapping("/seachByTags")
+    public List<Playlist> searchByTags(@RequestParam String query) {
+        return playListService.searchByTags(query);
     }
 }

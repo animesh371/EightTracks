@@ -5,6 +5,7 @@ import org.assertj.core.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
 @Component
 public class PostgresModule {
     private final JdbcTemplate db;
+    private final NamedParameterJdbcTemplate namedJDBCTemplate;
 
     @Autowired
     public PostgresModule(@Value("${jdbc.url}") String url,
@@ -23,10 +25,15 @@ public class PostgresModule {
         String jdbcUrl = url + "?user=" + username + "&password=" + password;
 
         this.db = new JdbcTemplate(createDataSource(jdbcUrl, driver, Integer.parseInt(timeout), Integer.parseInt(poolSize), Optional.empty()));
+        this.namedJDBCTemplate = new NamedParameterJdbcTemplate(createDataSource(jdbcUrl, driver, Integer.parseInt(timeout), Integer.parseInt(poolSize), Optional.empty()));
     }
 
     public JdbcTemplate getDb() {
         return db;
+    }
+
+    public NamedParameterJdbcTemplate getNamedJDBCTemplate() {
+        return namedJDBCTemplate;
     }
 
     private static BasicDataSource createDataSource(String url, String driver, int timeout, int poolSize, Optional<Long> timeBetweenEvictionRunsMillis) {

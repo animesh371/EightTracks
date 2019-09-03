@@ -9,6 +9,7 @@ import java.util.List;
 @Builder
 @Getter
 public class Playlist {
+    private Integer playlistId;
     private String playListName;
     private String notes;
     private Date createdAt;
