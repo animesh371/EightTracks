@@ -84,7 +84,7 @@ public class PlayListDao {
 
         return postgressModule.getNamedJDBCTemplate()
                 .query("select p.playlistid, p.playlistname, p.playcount, p.likecount, p.trackcount, p.songs, count(p.playlistid) from " +
-                "playlist p, tags t, playlisttagmapping ptm where t.tagid=ptm.tagid AND t.tagname IN (:tags) AND p.playlistid=ptm.playlistid group by p.playlistid order by count(p.playlistid) desc , likecount desc, trackcount desc", parameters, ((resultSet, i) -> playlistItemMapper(resultSet)) );
+                "playlists p, tags t, playlisttagmapping ptm where t.tagid=ptm.tagid AND t.tagname IN (:tags) AND p.playlistid=ptm.playlistid group by p.playlistid order by count(p.playlistid) desc , likecount desc, trackcount desc", parameters, ((resultSet, i) -> playlistItemMapper(resultSet)) );
     }
 
     private Playlist playlistItemMapper(ResultSet resultSet) throws SQLException {
@@ -100,7 +100,7 @@ public class PlayListDao {
                 .playlistId(Integer.parseInt(resultSet.getString(PLAYLIST_ID)))
                 .playCount(Integer.parseInt(resultSet.getString(PLAY_COUNT)))
                 .likeCount(Integer.parseInt(resultSet.getString(LIKE_COUNT)))
-                .notes(resultSet.getString(NOTES))
+                //.notes(resultSet.getString(NOTES))
                 .playListName(resultSet.getString(PLAY_LIST_NAME))
                 .songs(songs)
                 .trackCount(Integer.parseInt(resultSet.getString(TRACK_COUNT)))

@@ -155,10 +155,7 @@ public class TestPlaylistController {
             addTag(addTags);
         }
 
-//        for(String tag : tagList) {
-//            removeTag(tag);
-//        }
-        List<Playlist> playlists1 = searchForPlaylistsByTags("tag1+tag3");
+        List<Playlist> playlists1 = searchForPlaylistsByTags("tag2+tag3");
         System.out.println(new Gson().toJsonTree(playlists1));
 
     }
