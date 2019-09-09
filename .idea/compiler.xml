@@ -7,10 +7,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="eight-tracks" />
         <module name="eighttracks" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="eight-tracks" target="1.8" />
       <module name="eighttracks" target="1.8" />
     </bytecodeTargetLevel>
   </component>
