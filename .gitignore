@@ -1,0 +1,23 @@
+# Java
+*.class
+target/
+
+# OSX
+.DS_Store
+
+# Idea
+*.iml
+.idea
+
+# Maven
+pom.xml.versionsBackup
+dependency-reduced-pom.xml
+
+# NetBeans
+nb-configuration.xml
+nbactions.xml
+
+# Eclipse
+.project
+.classpath
+.settings/
